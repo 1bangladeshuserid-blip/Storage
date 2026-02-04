@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Storage App - 50GB Storage</title>
+    <title>Video Storage App - Folders & 50GB Storage</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -21,7 +21,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -101,17 +101,26 @@
             gap: 30px;
         }
 
-        @media (min-width: 992px) {
+        @media (min-width: 1200px) {
             .main-content {
                 flex-direction: row;
             }
         }
 
-        .upload-section, .storage-section {
+        .sidebar {
+            flex: 0 0 300px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .content-area {
             flex: 1;
             background: rgba(0, 0, 0, 0.6);
             border-radius: 20px;
-            padding: 30px;
+            padding: 25px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -141,14 +150,12 @@
         .upload-area {
             border: 3px dashed #0088ff;
             border-radius: 15px;
-            padding: 60px 20px;
+            padding: 40px 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
             margin-bottom: 25px;
             background: rgba(0, 136, 255, 0.05);
-            position: relative;
-            overflow: hidden;
         }
 
         .upload-area:hover {
@@ -159,61 +166,162 @@
         }
 
         .upload-area i {
-            font-size: 4rem;
+            font-size: 3rem;
             color: #00d4ff;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .upload-area h3 {
-            margin-bottom: 15px;
-            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
         }
 
         .upload-area p {
             color: #aaa;
-            font-size: 1rem;
-            max-width: 400px;
-            margin: 0 auto;
+            font-size: 0.9rem;
         }
 
         #fileInput {
             display: none;
         }
 
-        .upload-btn {
+        .btn-primary {
             background: linear-gradient(to right, #00d4ff, #0088ff);
             color: white;
             border: none;
-            padding: 15px 35px;
-            border-radius: 12px;
-            font-size: 1.1rem;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             transition: all 0.3s;
-            font-weight: bold;
+            font-weight: 600;
             box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
         }
 
-        .upload-btn:hover {
+        .btn-primary:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(0, 180, 219, 0.5);
         }
 
-        .upload-info {
-            background: rgba(0, 212, 255, 0.05);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 25px;
-            border-left: 4px solid #00d4ff;
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
         }
 
-        .upload-info p {
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .folder-selector {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .folder-selector label {
+            display: block;
+            margin-bottom: 10px;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        #folderSelect {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .folder-list {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .folder-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: #bbb;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .folder-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .folder-item.active {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        .folder-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .folder-icon {
+            font-size: 1.5rem;
+            color: #00d4ff;
+        }
+
+        .folder-details h4 {
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .folder-details p {
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+
+        .folder-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .folder-action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .folder-action-btn:hover {
+            background: rgba(0, 212, 255, 0.7);
+            transform: scale(1.1);
         }
 
         .storage-info {
@@ -254,6 +362,9 @@
         }
 
         .video-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
             max-height: 600px;
             overflow-y: auto;
             padding-right: 10px;
@@ -263,10 +374,6 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
             transition: all 0.3s;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -279,52 +386,62 @@
         }
 
         .video-icon {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #00d4ff;
-        }
-
-        .video-info {
-            flex: 1;
+            margin-bottom: 15px;
         }
 
         .video-info h4 {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #fff;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             word-break: break-word;
+            height: 40px;
+            overflow: hidden;
         }
 
         .video-info p {
             color: #aaa;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .video-folder {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: inline-block;
         }
 
         .video-actions {
             display: flex;
-            gap: 15px;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .action-btn {
+            flex: 1;
             background: rgba(255, 255, 255, 0.1);
             border: none;
             color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            padding: 8px;
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 5px;
             transition: all 0.3s;
-            font-size: 1.2rem;
+            font-size: 0.9rem;
         }
 
         .action-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: scale(1.05);
         }
 
         .play-btn:hover {
@@ -339,35 +456,26 @@
             background: rgba(255, 0, 85, 0.7);
         }
 
-        .empty-storage {
+        .move-btn:hover {
+            background: rgba(255, 165, 0, 0.7);
+        }
+
+        .empty-state {
             text-align: center;
             padding: 60px 20px;
             color: #888;
+            grid-column: 1 / -1;
         }
 
-        .empty-storage i {
+        .empty-state i {
             font-size: 4rem;
             margin-bottom: 20px;
             color: #444;
         }
 
-        .empty-storage h3 {
+        .empty-state h3 {
             margin-bottom: 15px;
             color: #aaa;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #00d4ff;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         .progress-container {
@@ -391,6 +499,86 @@
             background: linear-gradient(to right, #00d4ff, #0088ff);
             width: 0%;
             transition: width 0.3s;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            background: linear-gradient(to right, #00d4ff, #0088ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: #00d4ff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
         }
 
         footer {
@@ -436,7 +624,7 @@
             border-radius: 10px;
         }
 
-        ::-webkit-scrollbar-thumb {
+        ::webkit-scrollbar-thumb {
             background: rgba(0, 212, 255, 0.5);
             border-radius: 10px;
         }
@@ -445,33 +633,55 @@
             background: rgba(0, 212, 255, 0.8);
         }
 
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #00d4ff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Responsive adjustments */
-        @media (max-width: 991px) {
+        @media (max-width: 1199px) {
+            .sidebar {
+                flex: 0 0 250px;
+            }
+            
+            .video-list {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                flex: none;
+            }
+            
             header h1 {
                 font-size: 2.2rem;
             }
             
-            .upload-section, .storage-section {
-                padding: 25px;
-            }
-            
-            .video-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .video-actions {
-                align-self: flex-end;
-            }
-            
-            footer {
-                flex-direction: column;
-                text-align: center;
+            .video-list {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }
         }
 
         @media (max-width: 576px) {
+            .video-list {
+                grid-template-columns: 1fr;
+            }
+            
             header h1 {
                 font-size: 1.8rem;
             }
@@ -481,16 +691,11 @@
             }
             
             .upload-area {
-                padding: 40px 15px;
+                padding: 30px 15px;
             }
             
             .upload-area i {
-                font-size: 3rem;
-            }
-            
-            .video-actions {
-                width: 100%;
-                justify-content: center;
+                font-size: 2.5rem;
             }
         }
     </style>
@@ -498,37 +703,84 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-video"></i> Video Vault</h1>
-            <p>Store up to 50GB of videos and download them anytime with real file downloads</p>
+            <h1><i class="fas fa-folder"></i> Video Vault Pro</h1>
+            <p>Organize videos in folders, store up to 50GB, and download anytime</p>
             <div class="storage-badge">
-                <i class="fas fa-database"></i> 50GB Storage Capacity
+                <i class="fas fa-database"></i> 50GB Storage with Folder Support
             </div>
         </header>
         
         <div class="app-description">
             <div class="description-text">
-                <p><i class="fas fa-check-circle"></i> This app uses IndexedDB to store up to 50GB of videos directly in your browser</p>
-                <p><i class="fas fa-check-circle"></i> Real file downloads - videos download as actual video files, not base64 data</p>
-                <p><i class="fas fa-check-circle"></i> Fast playback and downloads - works completely offline after uploading</p>
+                <p><i class="fas fa-folder-plus"></i> Create folders to organize your videos</p>
+                <p><i class="fas fa-video"></i> Store videos in specific folders for easy access</p>
+                <p><i class="fas fa-download"></i> Real file downloads - not base64 data</p>
             </div>
             <div class="stats-box">
-                <h3><i class="fas fa-chart-line"></i> Storage Stats</h3>
+                <h3><i class="fas fa-chart-pie"></i> Storage Stats</h3>
                 <p id="statsInfo">Calculating...</p>
             </div>
         </div>
         
         <div class="main-content">
-            <section class="upload-section">
+            <!-- Sidebar with folder management -->
+            <aside class="sidebar">
+                <div class="section-title">
+                    <i class="fas fa-folder-tree"></i>
+                    <h2>Folders</h2>
+                </div>
+                
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <button class="btn-primary" id="createFolderBtn">
+                        <i class="fas fa-plus-circle"></i> Create New Folder
+                    </button>
+                </div>
+                
+                <div class="folder-list" id="folderList">
+                    <!-- Folders will be loaded here -->
+                    <div class="folder-item active" data-id="all">
+                        <div class="folder-info">
+                            <div class="folder-icon">
+                                <i class="fas fa-film"></i>
+                            </div>
+                            <div class="folder-details">
+                                <h4>All Videos</h4>
+                                <p>View all videos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="storage-info">
+                    <span>Storage:</span>
+                    <div class="storage-bar-container">
+                        <div class="storage-bar">
+                            <div class="storage-fill" id="storageFill"></div>
+                        </div>
+                    </div>
+                    <span class="storage-text" id="storageText">0 GB / 50 GB</span>
+                </div>
+            </aside>
+            
+            <!-- Main content area -->
+            <main class="content-area">
                 <div class="section-title">
                     <i class="fas fa-cloud-upload-alt"></i>
-                    <h2>Upload Video</h2>
+                    <h2 id="contentTitle">All Videos</h2>
                 </div>
                 
                 <div class="upload-area" id="uploadArea">
                     <i class="fas fa-file-video"></i>
-                    <h3>Drag & Drop or Click to Upload</h3>
-                    <p>Supports MP4, AVI, MKV, MOV, WebM and other video formats up to 2GB each</p>
+                    <h3>Drag & Drop or Click to Upload Video</h3>
+                    <p>Supports MP4, AVI, MKV, MOV, WebM up to 2GB each</p>
                     <input type="file" id="fileInput" accept="video/*">
+                </div>
+                
+                <div class="folder-selector" id="folderSelector" style="display: none;">
+                    <label for="folderSelect"><i class="fas fa-folder"></i> Select Folder for Upload:</label>
+                    <select id="folderSelect" class="form-control">
+                        <option value="">Select a folder...</option>
+                    </select>
                 </div>
                 
                 <div class="progress-container" id="progressContainer">
@@ -539,48 +791,26 @@
                     <div id="progressPercent">0%</div>
                 </div>
                 
-                <div style="text-align: center;">
-                    <button class="upload-btn" id="uploadBtn">
-                        <i class="fas fa-upload"></i> Select & Upload Video
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="btn-primary" id="uploadBtn">
+                        <i class="fas fa-upload"></i> Upload Video to Selected Folder
                     </button>
                 </div>
                 
-                <div class="upload-info">
-                    <p><i class="fas fa-info-circle"></i> Videos are stored in your browser's IndexedDB. Clearing browser data will remove them.</p>
-                    <p><i class="fas fa-shield-alt"></i> Your videos stay on your device - no upload to any server</p>
-                </div>
-            </section>
-            
-            <section class="storage-section">
-                <div class="section-title">
-                    <i class="fas fa-database"></i>
-                    <h2>Video Storage (50GB)</h2>
-                </div>
-                
-                <div class="storage-info">
-                    <span>Storage Used:</span>
-                    <div class="storage-bar-container">
-                        <div class="storage-bar">
-                            <div class="storage-fill" id="storageFill"></div>
-                        </div>
-                    </div>
-                    <span class="storage-text" id="storageText">0 GB / 50 GB</span>
-                </div>
-                
                 <div class="video-list" id="videoList">
-                    <!-- Video items will be added here dynamically -->
-                    <div class="empty-storage">
+                    <!-- Videos will be loaded here -->
+                    <div class="empty-state">
                         <i class="fas fa-film"></i>
-                        <h3>Your video storage is empty</h3>
-                        <p>Upload your first video to get started</p>
+                        <h3>No videos in this folder</h3>
+                        <p>Upload videos or move videos from other folders</p>
                     </div>
                 </div>
-            </section>
+            </main>
         </div>
         
         <footer>
             <div class="footer-section">
-                <p>Video Vault &copy; 2023 | 50GB Video Storage App</p>
+                <p>Video Vault Pro &copy; 2023 | Folder Management System</p>
                 <p>All data stored locally on your device</p>
             </div>
             <div class="footer-section">
@@ -593,10 +823,55 @@
                 </div>
             </div>
             <div class="footer-section">
-                <p>Videos are stored in browser's IndexedDB</p>
-                <p>Maximum storage: 50GB (browser dependent)</p>
+                <p>Organize videos in folders</p>
+                <p>Maximum storage: 50GB</p>
             </div>
         </footer>
+    </div>
+    
+    <!-- Create Folder Modal -->
+    <div class="modal" id="createFolderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-folder-plus"></i> Create New Folder</h3>
+                <button class="close-modal" id="closeFolderModal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="folderName">Folder Name</label>
+                <input type="text" id="folderName" class="form-control" placeholder="Enter folder name">
+            </div>
+            <div class="form-group">
+                <label for="folderDescription">Description (Optional)</label>
+                <textarea id="folderDescription" class="form-control" placeholder="Enter folder description" rows="3"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelFolderBtn">Cancel</button>
+                <button class="btn-primary" id="saveFolderBtn">Create Folder</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Move Video Modal -->
+    <div class="modal" id="moveVideoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-folder-move"></i> Move Video to Folder</h3>
+                <button class="close-modal" id="closeMoveModal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="moveVideoName">Video: <span id="moveVideoNameText"></span></label>
+            </div>
+            <div class="form-group">
+                <label for="moveFolderSelect">Select Destination Folder</label>
+                <select id="moveFolderSelect" class="form-control">
+                    <option value="">Select a folder...</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelMoveBtn">Cancel</button>
+                <button class="btn-primary" id="saveMoveBtn">Move Video</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -605,8 +880,12 @@
         const uploadArea = document.getElementById('uploadArea');
         const uploadBtn = document.getElementById('uploadBtn');
         const videoList = document.getElementById('videoList');
+        const folderList = document.getElementById('folderList');
+        const folderSelect = document.getElementById('folderSelect');
+        const folderSelector = document.getElementById('folderSelector');
         const storageFill = document.getElementById('storageFill');
         const storageText = document.getElementById('storageText');
+        const contentTitle = document.getElementById('contentTitle');
         const progressContainer = document.getElementById('progressContainer');
         const progressFill = document.getElementById('progressFill');
         const progressPercent = document.getElementById('progressPercent');
@@ -614,15 +893,35 @@
         const fileName = document.getElementById('fileName');
         const statsInfo = document.getElementById('statsInfo');
         
+        // Modal elements
+        const createFolderModal = document.getElementById('createFolderModal');
+        const moveVideoModal = document.getElementById('moveVideoModal');
+        const createFolderBtn = document.getElementById('createFolderBtn');
+        const closeFolderModal = document.getElementById('closeFolderModal');
+        const cancelFolderBtn = document.getElementById('cancelFolderBtn');
+        const saveFolderBtn = document.getElementById('saveFolderBtn');
+        const closeMoveModal = document.getElementById('closeMoveModal');
+        const cancelMoveBtn = document.getElementById('cancelMoveBtn');
+        const saveMoveBtn = document.getElementById('saveMoveBtn');
+        const folderNameInput = document.getElementById('folderName');
+        const folderDescriptionInput = document.getElementById('folderDescription');
+        const moveFolderSelect = document.getElementById('moveFolderSelect');
+        const moveVideoNameText = document.getElementById('moveVideoNameText');
+        
         // Constants
         const MAX_STORAGE_GB = 50;
-        const MAX_STORAGE_BYTES = MAX_STORAGE_GB * 1024 * 1024 * 1024; // Convert to bytes
+        const MAX_STORAGE_BYTES = MAX_STORAGE_GB * 1024 * 1024 * 1024;
         
         // Database setup
         let db;
-        const DB_NAME = 'VideoStorageDB';
-        const DB_VERSION = 1;
-        const STORE_NAME = 'videos';
+        const DB_NAME = 'VideoStorageDBWithFolders';
+        const DB_VERSION = 2; // Increased version for schema update
+        const STORE_VIDEOS = 'videos';
+        const STORE_FOLDERS = 'folders';
+        
+        // State variables
+        let currentFolderId = 'all'; // 'all' means show all videos
+        let videoToMoveId = null;
         
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -632,6 +931,34 @@
             uploadArea.addEventListener('click', () => fileInput.click());
             uploadBtn.addEventListener('click', () => fileInput.click());
             fileInput.addEventListener('change', handleFileUpload);
+            
+            // Folder modal events
+            createFolderBtn.addEventListener('click', () => {
+                folderNameInput.value = '';
+                folderDescriptionInput.value = '';
+                createFolderModal.style.display = 'flex';
+            });
+            
+            closeFolderModal.addEventListener('click', () => {
+                createFolderModal.style.display = 'none';
+            });
+            
+            cancelFolderBtn.addEventListener('click', () => {
+                createFolderModal.style.display = 'none';
+            });
+            
+            saveFolderBtn.addEventListener('click', createFolder);
+            
+            // Move video modal events
+            closeMoveModal.addEventListener('click', () => {
+                moveVideoModal.style.display = 'none';
+            });
+            
+            cancelMoveBtn.addEventListener('click', () => {
+                moveVideoModal.style.display = 'none';
+            });
+            
+            saveMoveBtn.addEventListener('click', moveVideoToFolder);
             
             // Drag and drop functionality
             uploadArea.addEventListener('dragover', (e) => {
@@ -655,9 +982,19 @@
                     handleFileUpload();
                 }
             });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === createFolderModal) {
+                    createFolderModal.style.display = 'none';
+                }
+                if (e.target === moveVideoModal) {
+                    moveVideoModal.style.display = 'none';
+                }
+            });
         });
         
-        // Initialize IndexedDB
+        // Initialize IndexedDB with two object stores
         function initDatabase() {
             const request = indexedDB.open(DB_NAME, DB_VERSION);
             
@@ -669,24 +1006,242 @@
             request.onupgradeneeded = function(event) {
                 db = event.target.result;
                 
-                // Create object store for videos
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    const objectStore = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                // Create videos object store
+                if (!db.objectStoreNames.contains(STORE_VIDEOS)) {
+                    const videoStore = db.createObjectStore(STORE_VIDEOS, { keyPath: 'id', autoIncrement: true });
+                    videoStore.createIndex('folderId', 'folderId', { unique: false });
+                    videoStore.createIndex('name', 'name', { unique: false });
+                    videoStore.createIndex('date', 'date', { unique: false });
+                }
+                
+                // Create folders object store
+                if (!db.objectStoreNames.contains(STORE_FOLDERS)) {
+                    const folderStore = db.createObjectStore(STORE_FOLDERS, { keyPath: 'id', autoIncrement: true });
+                    folderStore.createIndex('name', 'name', { unique: false });
                     
-                    // Create indexes for searching
-                    objectStore.createIndex('name', 'name', { unique: false });
-                    objectStore.createIndex('size', 'size', { unique: false });
-                    objectStore.createIndex('date', 'date', { unique: false });
-                    
-                    console.log('Database created successfully');
+                    // Add default "Uncategorized" folder
+                    folderStore.add({
+                        name: 'Uncategorized',
+                        description: 'Videos without a specific folder',
+                        createdAt: new Date().toISOString(),
+                        videoCount: 0
+                    });
                 }
             };
             
             request.onsuccess = function(event) {
                 db = event.target.result;
                 console.log('Database opened successfully');
+                loadFolders();
                 loadVideos();
                 updateStorageDisplay();
+                populateFolderDropdowns();
+            };
+        }
+        
+        // Load folders from database
+        function loadFolders() {
+            if (!db) return;
+            
+            const transaction = db.transaction([STORE_FOLDERS], 'readonly');
+            const store = transaction.objectStore(STORE_FOLDERS);
+            const request = store.getAll();
+            
+            request.onsuccess = function(event) {
+                const folders = event.target.result;
+                let foldersHTML = `
+                    <div class="folder-item active" data-id="all">
+                        <div class="folder-info">
+                            <div class="folder-icon">
+                                <i class="fas fa-film"></i>
+                            </div>
+                            <div class="folder-details">
+                                <h4>All Videos</h4>
+                                <p>View all videos</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                folders.forEach(folder => {
+                    foldersHTML += `
+                        <div class="folder-item" data-id="${folder.id}">
+                            <div class="folder-info">
+                                <div class="folder-icon">
+                                    <i class="fas fa-folder"></i>
+                                </div>
+                                <div class="folder-details">
+                                    <h4>${folder.name}</h4>
+                                    <p>${folder.videoCount || 0} videos</p>
+                                </div>
+                            </div>
+                            <div class="folder-actions">
+                                <button class="folder-action-btn delete-folder-btn" title="Delete Folder">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                folderList.innerHTML = foldersHTML;
+                
+                // Add event listeners to folder items
+                document.querySelectorAll('.folder-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        if (!e.target.closest('.folder-action-btn')) {
+                            // Remove active class from all folders
+                            document.querySelectorAll('.folder-item').forEach(el => {
+                                el.classList.remove('active');
+                            });
+                            
+                            // Add active class to clicked folder
+                            this.classList.add('active');
+                            
+                            // Update current folder and load videos
+                            currentFolderId = this.dataset.id;
+                            loadVideos();
+                            
+                            // Update content title
+                            const folderName = this.querySelector('.folder-details h4').textContent;
+                            contentTitle.textContent = folderName;
+                            
+                            // Show/hide folder selector for uploads
+                            if (currentFolderId === 'all') {
+                                folderSelector.style.display = 'none';
+                            } else {
+                                folderSelector.style.display = 'block';
+                                // Set the dropdown to current folder
+                                folderSelect.value = currentFolderId;
+                            }
+                        }
+                    });
+                });
+                
+                // Add event listeners to delete folder buttons
+                document.querySelectorAll('.delete-folder-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const folderId = parseInt(this.closest('.folder-item').dataset.id);
+                        deleteFolder(folderId);
+                    });
+                });
+            };
+        }
+        
+        // Load videos based on current folder
+        function loadVideos() {
+            if (!db) return;
+            
+            const transaction = db.transaction([STORE_VIDEOS], 'readonly');
+            const store = transaction.objectStore(STORE_VIDEOS);
+            let request;
+            
+            if (currentFolderId === 'all') {
+                request = store.getAll();
+            } else {
+                const index = store.index('folderId');
+                request = index.getAll(parseInt(currentFolderId));
+            }
+            
+            request.onsuccess = function(event) {
+                const videos = event.target.result;
+                
+                if (videos.length === 0) {
+                    videoList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-film"></i>
+                            <h3>No videos in this folder</h3>
+                            <p>Upload videos or move videos from other folders</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Sort videos by date (newest first)
+                videos.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                // Generate HTML for video list
+                let videosHTML = '';
+                
+                videos.forEach(video => {
+                    const fileSize = formatFileSize(video.size);
+                    const uploadDate = new Date(video.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                    
+                    // Get folder name
+                    let folderName = 'Uncategorized';
+                    if (video.folderId) {
+                        // In a real app, we would fetch the folder name from the database
+                        // For simplicity, we'll store it with the video
+                        folderName = video.folderName || 'Folder';
+                    }
+                    
+                    videosHTML += `
+                        <div class="video-item" data-id="${video.id}">
+                            <div class="video-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <div class="video-info">
+                                <h4>${video.name}</h4>
+                                <p><i class="fas fa-weight-hanging"></i> ${fileSize}</p>
+                                <p><i class="far fa-calendar"></i> ${uploadDate}</p>
+                                <p><i class="fas fa-file"></i> ${video.type.split('/')[1] || 'video'}</p>
+                                <span class="video-folder">
+                                    <i class="fas fa-folder"></i> ${folderName}
+                                </span>
+                            </div>
+                            <div class="video-actions">
+                                <button class="action-btn play-btn" title="Play">
+                                    <i class="fas fa-play"></i> Play
+                                </button>
+                                <button class="action-btn download-btn" title="Download">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                                <button class="action-btn move-btn" title="Move to Folder">
+                                    <i class="fas fa-folder-move"></i> Move
+                                </button>
+                                <button class="action-btn delete-btn" title="Delete">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                videoList.innerHTML = videosHTML;
+                
+                // Add event listeners to video buttons
+                document.querySelectorAll('.play-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const videoId = parseInt(this.closest('.video-item').dataset.id);
+                        playVideo(videoId);
+                    });
+                });
+                
+                document.querySelectorAll('.download-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const videoId = parseInt(this.closest('.video-item').dataset.id);
+                        downloadVideo(videoId);
+                    });
+                });
+                
+                document.querySelectorAll('.move-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const videoId = parseInt(this.closest('.video-item').dataset.id);
+                        showMoveVideoModal(videoId);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const videoId = parseInt(this.closest('.video-item').dataset.id);
+                        deleteVideo(videoId);
+                    });
+                });
             };
         }
         
@@ -702,9 +1257,23 @@
             }
             
             // Check file size (max 2GB per file)
-            const maxFileSize = 2 * 1024 * 1024 * 1024; // 2GB in bytes
+            const maxFileSize = 2 * 1024 * 1024 * 1024;
             if (file.size > maxFileSize) {
                 alert(`File is too large. Maximum file size is 2 GB.`);
+                return;
+            }
+            
+            // Determine target folder
+            let targetFolderId = null;
+            if (currentFolderId !== 'all') {
+                targetFolderId = parseInt(currentFolderId);
+            } else if (folderSelect.value) {
+                targetFolderId = parseInt(folderSelect.value);
+            }
+            
+            // If no folder selected and not in "All Videos" view, show warning
+            if (!targetFolderId && currentFolderId === 'all') {
+                alert('Please select a folder for the video from the dropdown.');
                 return;
             }
             
@@ -715,11 +1284,11 @@
             progressPercent.textContent = '0%';
             
             // Start upload process
-            uploadVideo(file);
+            uploadVideo(file, targetFolderId);
         }
         
         // Upload video to IndexedDB
-        function uploadVideo(file) {
+        function uploadVideo(file, folderId) {
             const reader = new FileReader();
             
             reader.onloadstart = function() {
@@ -736,44 +1305,49 @@
             };
             
             reader.onload = function(event) {
-                // Create video object
-                const video = {
-                    name: file.name,
-                    size: file.size,
-                    type: file.type,
-                    data: event.target.result,
-                    date: new Date().toISOString(),
-                    lastModified: file.lastModified
-                };
-                
-                // Save to IndexedDB
-                const transaction = db.transaction([STORE_NAME], 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                const request = store.add(video);
-                
-                request.onsuccess = function() {
-                    // Reset progress
-                    setTimeout(() => {
-                        progressContainer.style.display = 'none';
-                        progressFill.style.width = '0%';
-                        progressPercent.textContent = '0%';
-                    }, 500);
+                // Get folder name for display
+                let folderName = 'Uncategorized';
+                if (folderId) {
+                    // Get folder name from database
+                    const transaction = db.transaction([STORE_FOLDERS], 'readonly');
+                    const store = transaction.objectStore(STORE_FOLDERS);
+                    const request = store.get(folderId);
                     
-                    // Update UI
-                    loadVideos();
-                    updateStorageDisplay();
+                    request.onsuccess = function(e) {
+                        const folder = e.target.result;
+                        if (folder) {
+                            folderName = folder.name;
+                        }
+                        
+                        // Create video object
+                        const video = {
+                            name: file.name,
+                            size: file.size,
+                            type: file.type,
+                            data: event.target.result,
+                            date: new Date().toISOString(),
+                            lastModified: file.lastModified,
+                            folderId: folderId,
+                            folderName: folderName
+                        };
+                        
+                        // Save to IndexedDB
+                        saveVideoToDB(video, folderId);
+                    };
+                } else {
+                    // Create video object without folder
+                    const video = {
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        data: event.target.result,
+                        date: new Date().toISOString(),
+                        lastModified: file.lastModified
+                    };
                     
-                    // Reset file input
-                    fileInput.value = '';
-                    
-                    // Show success message
-                    alert(`"${file.name}" uploaded successfully!`);
-                };
-                
-                request.onerror = function(event) {
-                    console.error('Error adding video:', event.target.error);
-                    alert('Failed to upload video. Please try again.');
-                };
+                    // Save to IndexedDB
+                    saveVideoToDB(video, folderId);
+                }
             };
             
             reader.onerror = function() {
@@ -781,105 +1355,220 @@
                 progressContainer.style.display = 'none';
             };
             
-            // Read file as ArrayBuffer for better performance with large files
+            // Read file as ArrayBuffer
             reader.readAsArrayBuffer(file);
         }
         
-        // Load videos from IndexedDB
-        function loadVideos() {
-            if (!db) return;
+        // Save video to database and update folder count
+        function saveVideoToDB(video, folderId) {
+            const transaction = db.transaction([STORE_VIDEOS], 'readwrite');
+            const store = transaction.objectStore(STORE_VIDEOS);
+            const request = store.add(video);
             
-            const transaction = db.transaction([STORE_NAME], 'readonly');
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.getAll();
+            request.onsuccess = function() {
+                // Update folder video count if folderId exists
+                if (folderId) {
+                    updateFolderVideoCount(folderId, 1);
+                }
+                
+                // Reset progress
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    progressFill.style.width = '0%';
+                    progressPercent.textContent = '0%';
+                }, 500);
+                
+                // Update UI
+                loadVideos();
+                updateStorageDisplay();
+                
+                // Reset file input
+                fileInput.value = '';
+                
+                // Show success message
+                showNotification(`"${video.name}" uploaded successfully to ${video.folderName || 'Uncategorized'}!`);
+            };
+            
+            request.onerror = function(event) {
+                console.error('Error adding video:', event.target.error);
+                alert('Failed to upload video. Please try again.');
+            };
+        }
+        
+        // Create new folder
+        function createFolder() {
+            const name = folderNameInput.value.trim();
+            const description = folderDescriptionInput.value.trim();
+            
+            if (!name) {
+                alert('Please enter a folder name');
+                return;
+            }
+            
+            const folder = {
+                name: name,
+                description: description,
+                createdAt: new Date().toISOString(),
+                videoCount: 0
+            };
+            
+            const transaction = db.transaction([STORE_FOLDERS], 'readwrite');
+            const store = transaction.objectStore(STORE_FOLDERS);
+            const request = store.add(folder);
+            
+            request.onsuccess = function() {
+                // Close modal
+                createFolderModal.style.display = 'none';
+                
+                // Update UI
+                loadFolders();
+                populateFolderDropdowns();
+                
+                // Show success message
+                showNotification(`Folder "${name}" created successfully!`);
+            };
+            
+            request.onerror = function(event) {
+                console.error('Error creating folder:', event.target.error);
+                alert('Failed to create folder. Please try again.');
+            };
+        }
+        
+        // Delete folder
+        function deleteFolder(folderId) {
+            if (!confirm('Are you sure you want to delete this folder? Videos in this folder will be moved to "Uncategorized".')) {
+                return;
+            }
+            
+            // First, move all videos in this folder to uncategorized (folderId = null)
+            const videoTransaction = db.transaction([STORE_VIDEOS], 'readwrite');
+            const videoStore = videoTransaction.objectStore(STORE_VIDEOS);
+            const index = videoStore.index('folderId');
+            const request = index.getAll(folderId);
             
             request.onsuccess = function(event) {
                 const videos = event.target.result;
                 
-                if (videos.length === 0) {
-                    videoList.innerHTML = `
-                        <div class="empty-storage">
-                            <i class="fas fa-film"></i>
-                            <h3>Your video storage is empty</h3>
-                            <p>Upload your first video to get started</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // Sort videos by date (newest first)
-                videos.sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                // Generate HTML for video list
-                let videosHTML = '';
                 videos.forEach(video => {
-                    const fileSize = formatFileSize(video.size);
-                    const uploadDate = new Date(video.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
+                    video.folderId = null;
+                    video.folderName = 'Uncategorized';
+                    videoStore.put(video);
+                });
+                
+                // Now delete the folder
+                const folderTransaction = db.transaction([STORE_FOLDERS], 'readwrite');
+                const folderStore = folderTransaction.objectStore(STORE_FOLDERS);
+                folderStore.delete(folderId);
+                
+                folderTransaction.oncomplete = function() {
+                    // Update UI
+                    loadFolders();
+                    loadVideos();
+                    populateFolderDropdowns();
                     
-                    videosHTML += `
-                        <div class="video-item" data-id="${video.id}">
-                            <div class="video-icon">
-                                <i class="fas fa-video"></i>
-                            </div>
-                            <div class="video-info">
-                                <h4>${video.name}</h4>
-                                <p>
-                                    <span><i class="fas fa-weight-hanging"></i> ${fileSize}</span>
-                                    <span><i class="far fa-calendar"></i> ${uploadDate}</span>
-                                    <span><i class="fas fa-file"></i> ${video.type.split('/')[1] || 'video'}</span>
-                                </p>
-                            </div>
-                            <div class="video-actions">
-                                <button class="action-btn play-btn" title="Play Video">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                                <button class="action-btn download-btn" title="Download Video">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                                <button class="action-btn delete-btn" title="Delete Video">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
+                    // Show success message
+                    showNotification('Folder deleted. Videos moved to "Uncategorized".');
+                };
+            };
+        }
+        
+        // Show move video modal
+        function showMoveVideoModal(videoId) {
+            videoToMoveId = videoId;
+            
+            // Get video name for display
+            const transaction = db.transaction([STORE_VIDEOS], 'readonly');
+            const store = transaction.objectStore(STORE_VIDEOS);
+            const request = store.get(videoId);
+            
+            request.onsuccess = function(event) {
+                const video = event.target.result;
+                if (video) {
+                    moveVideoNameText.textContent = video.name;
+                    
+                    // Populate folder dropdown
+                    populateMoveFolderDropdown();
+                    
+                    // Show modal
+                    moveVideoModal.style.display = 'flex';
+                }
+            };
+        }
+        
+        // Move video to selected folder
+        function moveVideoToFolder() {
+            const targetFolderId = parseInt(moveFolderSelect.value);
+            
+            if (!targetFolderId) {
+                alert('Please select a folder');
+                return;
+            }
+            
+            const transaction = db.transaction([STORE_VIDEOS, STORE_FOLDERS], 'readwrite');
+            const videoStore = transaction.objectStore(STORE_VIDEOS);
+            const folderStore = transaction.objectStore(STORE_FOLDERS);
+            
+            // Get the video
+            const getRequest = videoStore.get(videoToMoveId);
+            
+            getRequest.onsuccess = function(event) {
+                const video = event.target.result;
+                if (!video) return;
                 
-                videoList.innerHTML = videosHTML;
+                const oldFolderId = video.folderId;
                 
-                // Add event listeners to buttons
-                document.querySelectorAll('.play-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const videoId = parseInt(this.closest('.video-item').dataset.id);
-                        playVideo(videoId);
-                    });
-                });
+                // Get the target folder name
+                const folderRequest = folderStore.get(targetFolderId);
                 
-                document.querySelectorAll('.download-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const videoId = parseInt(this.closest('.video-item').dataset.id);
-                        downloadVideo(videoId);
-                    });
-                });
-                
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const videoId = parseInt(this.closest('.video-item').dataset.id);
-                        deleteVideo(videoId);
-                    });
-                });
+                folderRequest.onsuccess = function(e) {
+                    const folder = e.target.result;
+                    
+                    // Update video with new folder info
+                    video.folderId = targetFolderId;
+                    video.folderName = folder.name;
+                    
+                    // Save updated video
+                    videoStore.put(video);
+                    
+                    // Update folder counts
+                    if (oldFolderId) {
+                        updateFolderVideoCount(oldFolderId, -1);
+                    }
+                    updateFolderVideoCount(targetFolderId, 1);
+                    
+                    // Close modal
+                    moveVideoModal.style.display = 'none';
+                    
+                    // Update UI
+                    loadVideos();
+                    loadFolders();
+                    
+                    // Show success message
+                    showNotification(`Video moved to "${folder.name}" folder`);
+                };
+            };
+        }
+        
+        // Update folder video count
+        function updateFolderVideoCount(folderId, change) {
+            const transaction = db.transaction([STORE_FOLDERS], 'readwrite');
+            const store = transaction.objectStore(STORE_FOLDERS);
+            const request = store.get(folderId);
+            
+            request.onsuccess = function(event) {
+                const folder = event.target.result;
+                if (folder) {
+                    folder.videoCount = (folder.videoCount || 0) + change;
+                    if (folder.videoCount < 0) folder.videoCount = 0;
+                    store.put(folder);
+                }
             };
         }
         
         // Play video
         function playVideo(videoId) {
-            const transaction = db.transaction([STORE_NAME], 'readonly');
-            const store = transaction.objectStore(STORE_NAME);
+            const transaction = db.transaction([STORE_VIDEOS], 'readonly');
+            const store = transaction.objectStore(STORE_VIDEOS);
             const request = store.get(videoId);
             
             request.onsuccess = function(event) {
@@ -905,7 +1594,6 @@
                                 Your browser does not support the video tag.
                             </video>
                             <script>
-                                // Revoke object URL when page is closed
                                 window.onbeforeunload = function() {
                                     URL.revokeObjectURL("${url}");
                                 };
@@ -917,10 +1605,10 @@
             };
         }
         
-        // Download video - Real file download
+        // Download video
         function downloadVideo(videoId) {
-            const transaction = db.transaction([STORE_NAME], 'readonly');
-            const store = transaction.objectStore(STORE_NAME);
+            const transaction = db.transaction([STORE_VIDEOS], 'readonly');
+            const store = transaction.objectStore(STORE_VIDEOS);
             const request = store.get(videoId);
             
             request.onsuccess = function(event) {
@@ -941,7 +1629,7 @@
                     // Clean up
                     setTimeout(() => URL.revokeObjectURL(url), 100);
                     
-                    // Show download notification
+                    // Show notification
                     showNotification(`Downloading "${video.name}"...`);
                 }
             };
@@ -953,13 +1641,26 @@
                 return;
             }
             
-            const transaction = db.transaction([STORE_NAME], 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
-            const request = store.delete(videoId);
+            // First get the video to know its folder
+            const transaction = db.transaction([STORE_VIDEOS], 'readwrite');
+            const store = transaction.objectStore(STORE_VIDEOS);
+            const getRequest = store.get(videoId);
             
-            request.onsuccess = function() {
+            getRequest.onsuccess = function(event) {
+                const video = event.target.result;
+                const folderId = video.folderId;
+                
+                // Delete the video
+                store.delete(videoId);
+                
+                // Update folder count if video was in a folder
+                if (folderId) {
+                    updateFolderVideoCount(folderId, -1);
+                }
+                
                 // Update UI
                 loadVideos();
+                loadFolders();
                 updateStorageDisplay();
                 
                 // Show notification
@@ -967,12 +1668,39 @@
             };
         }
         
+        // Populate folder dropdowns
+        function populateFolderDropdowns() {
+            if (!db) return;
+            
+            const transaction = db.transaction([STORE_FOLDERS], 'readonly');
+            const store = transaction.objectStore(STORE_FOLDERS);
+            const request = store.getAll();
+            
+            request.onsuccess = function(event) {
+                const folders = event.target.result;
+                
+                // Populate upload folder dropdown
+                let folderOptions = '<option value="">Select a folder...</option>';
+                folders.forEach(folder => {
+                    folderOptions += `<option value="${folder.id}">${folder.name}</option>`;
+                });
+                
+                folderSelect.innerHTML = folderOptions;
+                moveFolderSelect.innerHTML = folderOptions;
+                
+                // If we're in a specific folder view, select that folder by default
+                if (currentFolderId !== 'all') {
+                    folderSelect.value = currentFolderId;
+                }
+            };
+        }
+        
         // Calculate storage usage
         function updateStorageDisplay() {
             if (!db) return;
             
-            const transaction = db.transaction([STORE_NAME], 'readonly');
-            const store = transaction.objectStore(STORE_NAME);
+            const transaction = db.transaction([STORE_VIDEOS], 'readonly');
+            const store = transaction.objectStore(STORE_VIDEOS);
             const request = store.getAll();
             
             request.onsuccess = function(event) {
@@ -991,10 +1719,11 @@
                 storageText.textContent = `${totalSizeGB.toFixed(2)} GB / ${MAX_STORAGE_GB} GB`;
                 
                 // Update stats box
+                const folderCount = document.querySelectorAll('.folder-item').length - 1; // minus "All Videos"
                 statsInfo.innerHTML = `
                     ${videos.length} Videos<br>
-                    ${totalSizeGB.toFixed(2)} GB Used<br>
-                    ${(MAX_STORAGE_GB - totalSizeGB).toFixed(2)} GB Free
+                    ${folderCount} Folders<br>
+                    ${totalSizeGB.toFixed(2)} GB Used
                 `;
                 
                 // Change color based on usage
@@ -1036,6 +1765,9 @@
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
                 z-index: 1000;
                 animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
             `;
             
             notification.innerHTML = `
@@ -1051,23 +1783,6 @@
                     document.body.removeChild(notification);
                 }, 300);
             }, 3000);
-            
-            // Add CSS for animations
-            if (!document.querySelector('#notification-styles')) {
-                const style = document.createElement('style');
-                style.id = 'notification-styles';
-                style.textContent = `
-                    @keyframes slideIn {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
-                    @keyframes slideOut {
-                        from { transform: translateX(0); opacity: 1; }
-                        to { transform: translateX(100%); opacity: 0; }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
         }
     </script>
 </body>
