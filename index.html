@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4K·eek — video player</title>
-    <!-- minimal style: pure 4K ready player, clean & functional -->
+    <title>4K·eek — Upload & Play (Local Gallery)</title>
     <style>
         * {
             margin: 0;
@@ -13,42 +12,111 @@
         }
 
         body {
-            background: #0b0f14;
+            background: linear-gradient(145deg, #0f1217 0%, #1a1f2a 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            padding: 12px;
+            font-family: 'Inter', system-ui, sans-serif;
+            padding: 16px;
         }
 
-        /* main card – fits 4K frame (3840x2160 scaled down gracefully) */
-        .player-4k {
-            max-width: 1600px;    /* allows 4K source to shine, but container scales */
+        .player-container {
+            max-width: 1600px;
             width: 100%;
-            background: #000000;
-            border-radius: 28px;
-            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(255, 215, 0, 0.2) inset;
+            background: #0b0e12;
+            border-radius: 32px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.8), 0 0 0 2px #ffd96633 inset;
             overflow: hidden;
-            transition: box-shadow 0.2s;
         }
 
-        .player-4k:hover {
-            box-shadow: 0 35px 65px rgba(0, 0, 0, 0.95), 0 0 0 3px #f5c5423a inset;
+        /* Upload section */
+        .upload-section {
+            padding: 20px 24px;
+            background: #1e232c;
+            border-bottom: 1px solid #ffd96633;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 20px;
         }
 
-        /* video wrapper – forces true aspect ratio 16:9 (exactly 3840/2160) */
+        .upload-label {
+            background: #2d333e;
+            color: #ffd966;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            border: 2px solid #ffd96666;
+            transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .upload-label:hover {
+            background: #3a4150;
+            border-color: #ffd966;
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px #ffd96633;
+        }
+
+        .upload-label:active {
+            transform: scale(0.98);
+        }
+
+        .file-info {
+            color: #aaa;
+            font-size: 1rem;
+            background: #252b34;
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 1px solid #4a4f5a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .file-info span {
+            color: #ffd966;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .badge-4k {
+            background: #b8860b;
+            color: #000;
+            font-weight: 800;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            border: 2px solid #ffcd7e;
+            text-shadow: 1px 1px 0 #ffdb9f;
+            white-space: nowrap;
+        }
+
+        .badge-4k::before {
+            content: "🎬 ";
+            font-size: 1.4rem;
+        }
+
+        /* Video wrapper */
         .video-wrapper {
             position: relative;
             width: 100%;
-            background: #0a0c0f;
+            background: #000;
             line-height: 0;
         }
 
         .video-wrapper::before {
             content: "";
             display: block;
-            padding-top: 56.25%; /* 16:9 = 9/16*100 = 56.25% → perfect 4K UHD */
+            padding-top: 56.25%; /* 16:9 aspect ratio */
         }
 
         video {
@@ -57,31 +125,28 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain;   /* keep full 4K geometry, no crop */
             background: #030405;
             cursor: pointer;
             outline: none;
+            object-fit: contain; /* ensures full video visible */
         }
 
-        /* custom sleek control bar – floating glass */
+        /* Controls */
         .controls {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 16px 24px;
-            background: rgba(18, 22, 28, 0.92);
+            background: rgba(18, 22, 28, 0.95);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255, 215, 100, 0.25);
+            border-top: 1px solid rgba(255, 215, 100, 0.3);
             color: #eee;
-            font-weight: 400;
             flex-wrap: wrap;
-            transition: all 0.2s;
         }
 
         .controls button {
-            background: transparent;
-            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 204, 0, 0.3);
             color: #f0e9d8;
             font-size: 1.7rem;
             width: 44px;
@@ -92,10 +157,7 @@
             justify-content: center;
             cursor: pointer;
             transition: 0.18s;
-            line-height: 1;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 204, 0, 0.25);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
 
         .controls button:hover {
@@ -103,30 +165,20 @@
             color: #ffdb7e;
             border-color: #ffcd4d;
             transform: scale(1.07);
-            box-shadow: 0 4px 14px rgba(255, 215, 0, 0.3);
         }
 
-        .controls button:active {
-            transform: scale(0.98);
-        }
-
-        /* time / duration indicator */
         .time-display {
             font-size: 1rem;
-            font-weight: 450;
-            letter-spacing: 0.3px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 6px 14px;
+            font-weight: 500;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 16px;
             border-radius: 48px;
-            border: 1px solid #3f3f4e;
-            box-shadow: inset 0 0 6px #0000004d;
-            backdrop-filter: blur(8px);
+            border: 1px solid #4a4f5a;
             font-variant-numeric: tabular-nums;
             color: #f5e7c8;
             white-space: nowrap;
         }
 
-        /* progress bar container */
         .progress-area {
             flex: 1 1 240px;
             min-width: 160px;
@@ -142,8 +194,7 @@
             border-radius: 30px;
             position: relative;
             cursor: pointer;
-            box-shadow: inset 0 1px 6px #000000;
-            border: 1px solid #464646;
+            border: 1px solid #5a5a6a;
             overflow: hidden;
         }
 
@@ -152,50 +203,44 @@
             width: 0%;
             background: linear-gradient(90deg, #ffb347, #ffd966);
             border-radius: 30px;
-            box-shadow: 0 0 12px #ffb347;
+            box-shadow: 0 0 15px #ffb347;
             transition: width 0.08s linear;
-            pointer-events: none;
         }
 
         .time-tooltip {
-            background: #282e38;
-            padding: 4px 10px;
+            background: #2d3440;
+            padding: 4px 12px;
             border-radius: 40px;
-            font-size: 0.85rem;
-            border: 1px solid #ffd96677;
+            font-size: 0.9rem;
+            border: 1px solid #ffd96699;
             color: #ffdcb0;
             font-weight: 500;
         }
 
-        /* volume slider */
         .volume-wrap {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(20, 20, 30, 0.6);
-            padding: 4px 12px 4px 6px;
+            background: rgba(30, 30, 40, 0.8);
+            padding: 4px 12px 4px 8px;
             border-radius: 48px;
-            border: 1px solid #4d4d66;
+            border: 1px solid #5a5a70;
         }
 
         .volume-wrap button {
             width: 36px;
             height: 36px;
             font-size: 1.5rem;
-            background: transparent;
-            border: none;
-            color: #ffdb9f;
         }
 
         input[type=range].volume-slider {
-            width: 82px;
+            width: 80px;
             height: 5px;
-            background: transparent;
             -webkit-appearance: none;
-            background: #32323c;
+            background: #3a3a48;
             border-radius: 20px;
             overflow: hidden;
-            border: 1px solid #6b6b7a;
+            border: 1px solid #6b6b80;
         }
 
         input[type=range].volume-slider::-webkit-slider-thumb {
@@ -204,75 +249,71 @@
             height: 14px;
             border-radius: 20px;
             background: #ffd966;
-            box-shadow: 0 0 10px #ffb347, -100px 0 0 90px #f5b34277;
+            box-shadow: 0 0 8px #ffb347;
             border: 1px solid white;
             cursor: pointer;
         }
 
-        /* fullscreen button */
         .fullscreen-btn {
             font-size: 1.6rem;
         }
 
-        /* 4K badge */
-        .badge-4k {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: #b8860b;
-            color: #0f0f12;
-            font-weight: 800;
-            font-size: 1rem;
-            padding: 4px 12px;
+        /* Resolution indicator */
+        .res-badge {
+            background: #2a3140;
+            color: #ffd966;
+            padding: 6px 14px;
             border-radius: 30px;
-            margin-left: 4px;
-            border: 1px solid #f5c84e;
-            text-shadow: 1px 1px 0 #ffcd7e;
-            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid #ffd966;
+            white-space: nowrap;
         }
 
-        .badge-4k span {
-            font-size: 1.2rem;
-            margin-right: 4px;
-        }
-
-        /* small responsive */
-        @media (max-width: 640px) {
-            .controls {
-                padding: 12px 10px;
-                gap: 8px;
+        @media (max-width: 700px) {
+            .upload-section {
+                flex-direction: column;
+                align-items: stretch;
             }
-            .time-display {
-                font-size: 0.9rem;
-                padding: 5px 10px;
+            .file-info {
+                width: 100%;
             }
             .volume-wrap {
-                display: none;   /* keep clean on narrow, but can be toggled later */
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="player-4k">
-        <!-- video container 16:9, true 4K ready (3840x2160) -->
+    <div class="player-container">
+        <!-- Upload section -->
+        <div class="upload-section">
+            <label for="videoUpload" class="upload-label">
+                <span>📁</span> Gallery se video chune
+            </label>
+            <input type="file" id="videoUpload" accept="video/*" style="display: none;">
+            
+            <div class="file-info" id="fileInfo">
+                <span>📌</span> <span id="fileName">Koi video select karo</span>
+            </div>
+            
+            <div class="badge-4k">4K Ready</div>
+        </div>
+
+        <!-- Video player -->
         <div class="video-wrapper">
-            <video id="4kVideo" preload="metadata" poster="https://via.placeholder.com/3840x2160/0b1a2b/ffc966?text=4K+UHD+Preview" crossorigin="anonymous">
-                <!-- big buck bunny 4K (open source, h264) – actual 4@30 3840x2160 -->
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny_4k.mp4" type="video/mp4">
-                <!-- fallback text if browser refuses -->
-                Your browser does not support 4K video. Try Chrome/Edge/Firefox.
+            <video id="mainVideo" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3840' height='2160' viewBox='0 0 3840 2160'%3E%3Crect width='3840' height='2160' fill='%23121826'/%3E%3Ctext x='50%25' y='50%25' font-size='80' font-family='Arial' fill='%23ffd966' text-anchor='middle' dy='.3em'%3E4K VIDEO PLAYER%3C/text%3E%3Ctext x='50%25' y='60%25' font-size='40' fill='%23ffffff66' text-anchor='middle'%3EUPLOAD KAREIN APNI VIDEO%3C/text%3E%3C/svg%3E">
+                <source src="" type="video/mp4">
+                Aapka browser video support nahi karta
             </video>
         </div>
 
-        <!-- custom control strip -->
-        <div class="controls" id="controlStrip">
-            <!-- play/pause button -->
-            <button id="playPauseBtn" title="play / pause">⏵</button>
+        <!-- Controls -->
+        <div class="controls">
+            <button id="playPauseBtn" title="Play/Pause">⏵</button>
             
-            <!-- time display (current / total) -->
             <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
 
-            <!-- progress bar + seek / preview (no thumbnail, but functional) -->
             <div class="progress-area">
                 <div class="progress-bar" id="progressBar">
                     <div class="progress-fill" id="progressFill"></div>
@@ -280,21 +321,22 @@
                 <div class="time-tooltip" id="timeTooltip">–:–</div>
             </div>
 
-            <!-- volume + mute with slider -->
             <div class="volume-wrap">
                 <button id="muteToggle">🔊</button>
                 <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.02" value="1">
             </div>
 
-            <!-- fullscreen trigger & 4K badge -->
-            <button id="fullscreenBtn" class="fullscreen-btn" title="fullscreen">⤢</button>
-            <div class="badge-4k"><span>🟨</span> 4K eek</div>
+            <button id="fullscreenBtn" class="fullscreen-btn" title="Fullscreen">⤢</button>
+            
+            <div class="res-badge" id="resolutionBadge">4K UHD</div>
         </div>
     </div>
 
     <script>
         (function() {
-            const video = document.getElementById('4kVideo');
+            const video = document.getElementById('mainVideo');
+            const fileInput = document.getElementById('videoUpload');
+            const fileName = document.getElementById('fileName');
             const playBtn = document.getElementById('playPauseBtn');
             const timeDisplay = document.getElementById('timeDisplay');
             const progressBar = document.getElementById('progressBar');
@@ -303,9 +345,11 @@
             const muteToggle = document.getElementById('muteToggle');
             const volumeSlider = document.getElementById('volumeSlider');
             const fullscreenBtn = document.getElementById('fullscreenBtn');
-            const controls = document.getElementById('controlStrip');
+            const resolutionBadge = document.getElementById('resolutionBadge');
+            
+            let videoDuration = 0;
 
-            // helper: format time (seconds -> MM:SS)
+            // Format time function
             function formatTime(seconds) {
                 if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
                 const hrs = Math.floor(seconds / 3600);
@@ -318,7 +362,7 @@
                 }
             }
 
-            // update time display + progress fill
+            // Update time and progress
             function updateTime() {
                 if (!video.duration) return;
                 const current = video.currentTime || 0;
@@ -328,34 +372,75 @@
                 progressFill.style.width = percent + '%';
             }
 
-            // when metadata loaded (4K duration known)
-            video.addEventListener('loadedmetadata', () => {
-                timeDisplay.textContent = `0:00 / ${formatTime(video.duration)}`;
-            });
-
-            // timeupdate (fired frequently)
             video.addEventListener('timeupdate', updateTime);
 
-            // play/pace toggle
+            // Upload video functionality
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Show file name
+                    fileName.textContent = file.name.length > 30 ? file.name.substring(0, 27) + '...' : file.name;
+                    
+                    // Create video URL
+                    const fileURL = URL.createObjectURL(file);
+                    video.src = fileURL;
+                    video.load();
+                    
+                    // Try to detect resolution when metadata loaded
+                    video.onloadedmetadata = function() {
+                        videoDuration = video.duration;
+                        timeDisplay.textContent = `0:00 / ${formatTime(videoDuration)}`;
+                        
+                        // Check video resolution
+                        const width = video.videoWidth;
+                        const height = video.videoHeight;
+                        
+                        if (width && height) {
+                            if (width >= 3840 || height >= 2160) {
+                                resolutionBadge.textContent = `4K UHD (${width}x${height})`;
+                                resolutionBadge.style.background = '#b8860b';
+                                resolutionBadge.style.color = '#000';
+                            } else if (width >= 1920) {
+                                resolutionBadge.textContent = `Full HD (${width}x${height})`;
+                                resolutionBadge.style.background = '#2a6d3b';
+                                resolutionBadge.style.color = '#fff';
+                            } else {
+                                resolutionBadge.textContent = `${width}x${height}`;
+                                resolutionBadge.style.background = '#2a3140';
+                                resolutionBadge.style.color = '#ffd966';
+                            }
+                        } else {
+                            resolutionBadge.textContent = 'Resolution unknown';
+                        }
+                        
+                        // Auto-play after upload (optional)
+                        video.play().catch(() => {});
+                    };
+                }
+            });
+
+            // Click on upload label
+            document.querySelector('.upload-label').addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            // Play/Pause
             function togglePlay() {
                 if (video.paused) {
-                    video.play().catch(e => console.log('play failed', e));
+                    video.play().catch(e => console.log('Play error:', e));
                 } else {
                     video.pause();
                 }
             }
 
             playBtn.addEventListener('click', togglePlay);
-
-            // update button icon when play state changes
-            video.addEventListener('play', () => { playBtn.textContent = '⏸'; });
-            video.addEventListener('pause', () => { playBtn.textContent = '⏵'; });
-            video.addEventListener('ended', () => { playBtn.textContent = '⏵'; progressFill.style.width = '0%'; }); // optional
-
-            // click on video toggles play/pause
             video.addEventListener('click', togglePlay);
 
-            // progress bar seeking: jump to position
+            video.addEventListener('play', () => { playBtn.textContent = '⏸'; });
+            video.addEventListener('pause', () => { playBtn.textContent = '⏵'; });
+            video.addEventListener('ended', () => { playBtn.textContent = '⏵'; });
+
+            // Progress bar seek
             progressBar.addEventListener('click', (e) => {
                 const rect = progressBar.getBoundingClientRect();
                 const clickX = e.clientX - rect.left;
@@ -366,7 +451,7 @@
                 }
             });
 
-            // show tooltip time while hovering progress bar (nice detail)
+            // Tooltip on hover
             progressBar.addEventListener('mousemove', (e) => {
                 const rect = progressBar.getBoundingClientRect();
                 const x = e.clientX - rect.left;
@@ -374,8 +459,6 @@
                 if (width && video.duration) {
                     const hoverTime = (x / width) * video.duration;
                     timeTooltip.textContent = formatTime(hoverTime);
-                } else {
-                    timeTooltip.textContent = '0:00';
                 }
             });
 
@@ -383,7 +466,7 @@
                 timeTooltip.textContent = '–:–';
             });
 
-            // volume + mute logic
+            // Volume controls
             function updateVolumeIcon() {
                 if (video.volume === 0 || video.muted) {
                     muteToggle.textContent = '🔇';
@@ -397,44 +480,27 @@
             volumeSlider.addEventListener('input', (e) => {
                 const val = parseFloat(e.target.value);
                 video.volume = val;
-                video.muted = false;  // unmute if moving slider
+                video.muted = false;
                 updateVolumeIcon();
             });
 
             muteToggle.addEventListener('click', () => {
                 video.muted = !video.muted;
-                // sync slider with muted state
-                if (video.muted) {
-                    volumeSlider.value = 0;
-                } else {
-                    volumeSlider.value = video.volume;
-                }
+                volumeSlider.value = video.muted ? 0 : video.volume;
                 updateVolumeIcon();
             });
 
-            // sync volume slider with video (in case changed by browser)
-            video.addEventListener('volumechange', () => {
-                if (!video.muted) {
-                    volumeSlider.value = video.volume;
-                } else {
-                    volumeSlider.value = 0;
-                }
-                updateVolumeIcon();
-            });
-
-            // initial volume state
+            video.addEventListener('volumechange', updateVolumeIcon);
             updateVolumeIcon();
 
-            // fullscreen logic (standard + webkit)
+            // Fullscreen
             fullscreenBtn.addEventListener('click', () => {
-                const container = document.querySelector('.player-4k'); // fullscreen entire card
+                const container = document.querySelector('.player-container');
                 if (!document.fullscreenElement) {
                     if (container.requestFullscreen) {
                         container.requestFullscreen();
-                    } else if (container.webkitRequestFullscreen) { // safari, chrome
+                    } else if (container.webkitRequestFullscreen) {
                         container.webkitRequestFullscreen();
-                    } else if (container.msRequestFullscreen) {
-                        container.msRequestFullscreen();
                     }
                 } else {
                     if (document.exitFullscreen) {
@@ -445,36 +511,23 @@
                 }
             });
 
-            // optional: listen for fullscreen change to toggle class (for style)
-            document.addEventListener('fullscreenchange', () => {
-                if (document.fullscreenElement) {
-                    document.querySelector('.player-4k').style.borderRadius = '0';
-                } else {
-                    document.querySelector('.player-4k').style.borderRadius = '28px';
-                }
-            });
-            // same for webkit
-            document.addEventListener('webkitfullscreenchange', () => {
-                if (document.webkitFullscreenElement) {
-                    document.querySelector('.player-4k').style.borderRadius = '0';
-                } else {
-                    document.querySelector('.player-4k').style.borderRadius = '28px';
-                }
-            });
-
-            // detect key events (space) – but do not override if typing elsewhere. 
+            // Keyboard space
             window.addEventListener('keydown', (e) => {
-                // if space, but not in input field
                 if (e.code === 'Space' && !['INPUT', 'TEXTAREA', 'BUTTON'].includes(e.target.tagName)) {
                     e.preventDefault();
                     togglePlay();
                 }
             });
 
-            // Optional: 4K ready message in console
-            console.log('⚡ 4K player — eek edition · UHD ready (3840x2160)');
+            // Clean up object URL when done
+            window.addEventListener('beforeunload', () => {
+                if (video.src && video.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(video.src);
+                }
+            });
+
+            console.log('🎥 4K Upload Player ready — apni video select karo!');
         })();
     </script>
-    <!-- small note: 4K video source from GCS (Big Buck Bunny, 4K H.264) perfectly legal -->
 </body>
 </html>
